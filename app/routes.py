@@ -10,8 +10,9 @@ boards_bp = Blueprint("boards",__name__,url_prefix="/boards")
 def create_board():
     request_body = request.get_json()
     try:
-        new_board = Board(title=request_body["title"],
-                        owner=request_body["owner"])
+        new_board = Board(
+            title=request_body["title"],
+            owner=request_body["owner"])
     except KeyError:
         abort(make_response({
             "details":"Invalid data"
@@ -60,6 +61,41 @@ def get_one_board(board_id):
     
 # CRUD for cards
 cards_bp = Blueprint("cards",__name__,url_prefix="/cards")
+
+@cards_bp.route("", methods=["POST"])
+def add_card():
+    request_body = request.get_json()
+    try:
+        message = request_body["message"]
+        if len(message) <= 40:
+            new_card = Card(message = request_body["message"])
+        else:
+            return {"details": "Message too long"}
+    except KeyError:
+        return {
+            "details" : "Invalid data"
+        }, 400
+    
+    db.session.add(new_card)
+    db.session.commit()
+
+    response_body = {
+        "card":{
+        "id":new_card.card_id,
+        "message":new_card.message, 
+        }
+    }
+    
+    return make_response(response_body, 201)
+
+@cards_bp.route("/<board_id>", methods=["GET"])
+def get_all_cards_by_board():
+    cards = Card.query.all()
+
+    cards_response = []
+
+    
+
 
     
 # Validation felper function
