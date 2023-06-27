@@ -29,8 +29,38 @@ def create_board():
     }
     
     return make_response(response_body,201)
-    # return {"board":{"id":new_board.board_id,"title":new_board.title,"owner":new_board.owner}},201
-    # return "hello, board!"
+    
+# View a list of all boards
+@boards_bp.route("",methods=["GET"])
+def check_all_boards():
+    boards = Board.query.all()
+    
+    boards_response = []
+    for board in boards:
+        boards_response.append({
+            "id":board.board_id,
+            "title":board.title,
+            "owner":board.owner 
+        })
+    return jsonify(boards_response)
+
+# Select a board
+@boards_bp.route("/<board_id>",methods=["GET"])
+def get_one_board(board_id):
+    board = validation_model(Board,board_id)
+    cards = [card.to_dict() for card in board.cards]
+    return {
+        "board":{
+            "id":board.board_id,
+            "title":board.title,
+            "owner":board.owner,
+            "cards":cards
+        }
+    }    
+    
+# CRUD for cards
+cards_bp = Blueprint("cards",__name__,url_prefix="/cards")
+
     
 # Validation felper function
 def validation_model(cls, model_id):
