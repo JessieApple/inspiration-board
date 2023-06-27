@@ -95,10 +95,7 @@ def get_all_cards_by_board(board_id):
 
     cards_response = []
 
-    print("before loop", cards, board_id)
-
     for card in cards:
-        print(card.to_dict())
         if card.board_id == int(board_id):
             cards_response.append(card.to_dict())
 
