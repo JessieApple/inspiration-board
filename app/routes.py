@@ -41,7 +41,7 @@ def check_all_boards():
 @boards_bp.route("/<board_id>",methods=["GET"])
 def get_one_board(board_id):
     board = validation_model(Board,board_id)
-    
+
     return {
         "board":{
             "id":board.board_id,
