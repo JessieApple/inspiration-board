@@ -68,7 +68,7 @@ def add_card():
     try:
         message = request_body["message"]
         if len(message) <= 40:
-            new_card = Card(message = request_body["message"])
+            new_card = Card.from_dict(request_body)
         else:
             return {"details": "Message too long"}
     except KeyError:
@@ -82,6 +82,7 @@ def add_card():
     response_body = {
         "card":{
         "id":new_card.card_id,
+        "board_id": new_card.board_id,
         "message":new_card.message, 
         }
     }
@@ -89,12 +90,19 @@ def add_card():
     return make_response(response_body, 201)
 
 @cards_bp.route("/<board_id>", methods=["GET"])
-def get_all_cards_by_board():
+def get_all_cards_by_board(board_id):
     cards = Card.query.all()
 
     cards_response = []
 
-    
+    print("before loop", cards, board_id)
+
+    for card in cards:
+        print(card.to_dict())
+        if card.board_id == int(board_id):
+            cards_response.append(card.to_dict())
+
+    return (jsonify(cards_response), 200)
 
 
     
