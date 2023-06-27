@@ -101,6 +101,16 @@ def get_all_cards_by_board(board_id):
 
     return (jsonify(cards_response), 200)
 
+@cards_bp.route("/<card_id>", methods=["DELETE"])
+def delete_card(card_id):
+    card = validation_model(Card, card_id)
+
+    db.session.delete(card)
+    db.session.commit()
+
+    return {'details': f'Card {card.card_id} successfully deleted'}, 200
+
+
 
     
 # Validation felper function
