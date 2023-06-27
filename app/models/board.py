@@ -6,5 +6,18 @@ class Board(db.Model):
     owner = db.Column(db.String)
     cards = db.relationship("Card", back_populates="board", lazy=True)
 
-    # @classmethod
-    # def from_dict(cls,board_data):
+    def to_dict(self):
+        return {
+            "id": self.board_id,
+            "title": self.title,
+            "owner": self.owner
+        }
+    
+    # def to_dict_with_card(self):
+    #     task_list = []
+    #     for task in self.tasks: 
+    #         task_list.append(task.to_dict_with_goal())
+    #     return {
+    #         "id": self.goal_id,
+    #         "title": self.title,
+    #         "tasks": task_list

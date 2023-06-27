@@ -20,16 +20,8 @@ def create_board():
     
     db.session.add(new_board)
     db.session.commit()
-    
-    response_body = {
-        "board":{
-        "id":new_board.board_id,
-        "title":new_board.title,
-        "owner":new_board.owner 
-        }
-    }
-    
-    return make_response(response_body,201)
+
+    return {"board": new_board.to_dict()}, 201
     
 # View a list of all boards
 @boards_bp.route("",methods=["GET"])
@@ -49,13 +41,12 @@ def check_all_boards():
 @boards_bp.route("/<board_id>",methods=["GET"])
 def get_one_board(board_id):
     board = validation_model(Board,board_id)
-    cards = [card.to_dict() for card in board.cards]
+    
     return {
         "board":{
             "id":board.board_id,
             "title":board.title,
-            "owner":board.owner,
-            "cards":cards
+            "owner":board.owner
         }
     }    
     
@@ -111,8 +102,6 @@ def delete_card(card_id):
     return {'details': f'Card {card.card_id} successfully deleted'}, 200
 
 
-
-    
 # Validation felper function
 def validation_model(cls, model_id):
     try:
