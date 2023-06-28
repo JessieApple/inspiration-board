@@ -5,7 +5,6 @@ from app.models.card import Card
 
 boards_bp = Blueprint("boards",__name__,url_prefix="/boards")
 
-# example_bp = Blueprint('example_bp', __name__)
 @boards_bp.route("",methods=["POST"])
 def create_board():
     request_body = request.get_json()
@@ -25,16 +24,13 @@ def create_board():
     
 # View a list of all boards
 @boards_bp.route("",methods=["GET"])
-def check_all_boards():
+def get_all_boards():
     boards = Board.query.all()
     
     boards_response = []
     for board in boards:
-        boards_response.append({
-            "id":board.board_id,
-            "title":board.title,
-            "owner":board.owner 
-        })
+        boards_response.append(board.to_dict())
+
     return jsonify(boards_response)
 
 # Select a board
@@ -42,13 +38,17 @@ def check_all_boards():
 def get_one_board(board_id):
     board = validation_model(Board,board_id)
 
-    return {
-        "board":{
-            "id":board.board_id,
-            "title":board.title,
-            "owner":board.owner
-        }
-    }    
+    return {"board":{board.to_dict()}}, 200
+
+@boards_bp.route("/<board_id>", methods=["DELETE"])
+def delete_board(board_id):
+    board = validation_model(Board, board_id)
+
+    db.session.delete(board)
+    db.session.commit()
+
+    return {'details': f'Board {board.board_id} successfully deleted'}, 200
+
     
 # CRUD for cards
 cards_bp = Blueprint("cards",__name__,url_prefix="/cards")
@@ -69,16 +69,8 @@ def add_card():
     
     db.session.add(new_card)
     db.session.commit()
-
-    response_body = {
-        "card":{
-        "id":new_card.card_id,
-        "board_id": new_card.board_id,
-        "message":new_card.message, 
-        }
-    }
     
-    return make_response(response_body, 201)
+    return {"card": new_card.to_dict()}, 201
 
 @cards_bp.route("/<board_id>", methods=["GET"])
 def get_all_cards_by_board(board_id):
