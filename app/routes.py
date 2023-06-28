@@ -93,6 +93,19 @@ def delete_card(card_id):
 
     return {'details': f'Card {card.card_id} successfully deleted'}, 200
 
+@cards_bp.route("/<card_id>", methods=["PATCH"])
+def update_card(card_id):
+    card = validation_model(Card, card_id)
+
+    request_body = request.get_json()
+    
+    card.likes_count = request_body["likes_count"]
+
+    db.session.commit()
+
+    return {"card": card.to_dict()}, 200
+
+
 
 # Validation felper function
 def validation_model(cls, model_id):
