@@ -61,11 +61,9 @@ def add_card():
         if len(message) <= 40:
             new_card = Card.from_dict(request_body)
         else:
-            return {"details": "Message too long"}
+            return {"details": "Message too long"}, 400
     except KeyError:
-        return {
-            "details" : "Invalid data"
-        }, 400
+        return {"details" : "Invalid data"}, 400
     
     db.session.add(new_card)
     db.session.commit()
